@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 """ Console Module """
+from pprint import pprint
+
+
 import cmd
 import sys
 from models.base_model import BaseModel
@@ -10,6 +13,10 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+import os
 
 
 class HBNBCommand(cmd.Cmd):
@@ -73,8 +80,8 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] =='}'\
-                            and type(eval(pline)) == dict:
+                    if pline[0] == '{' and pline[-1] == '}'\
+                            and type(eval(pline)) is dict:
                         _args = pline
                     else:
                         _args = pline.replace(',', '')
@@ -128,25 +135,24 @@ class HBNBCommand(cmd.Cmd):
 
         if len(arr) > 1:
             for arg in arr[1:]:
-                """parameters argumentes"""
+                """parseamos argumentos"""
                 chars = '"'
                 arg = ''.join(x for x in arg if x not in chars)
                 other_data.append(arg)
 
         new_instance = HBNBCommand.classes[arr[0]]()
 
-        """looping"""
+        """tipos de los valores de atributos por revisar"""
         for attr in other_data:
             key = attr.split("=")
             atributo = key[0]
-            # print(type(atributes))
+            # print(type(atributo))
             value = key[1].replace("_", " ")
-            # print(type(new_instance.atributes))
+            # print(type(new_instance.atributo))
             setattr(new_instance, key[0], value)
 
         new_instance.save()
         print(new_instance.id)
-
 
     def help_create(self):
         """ Help information for the create method """
@@ -228,13 +234,13 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            # Correción de codigo, change _FileStorage__objects [ERROR]
+            for k, v in storage.all(self.classes[args]).items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
-
         print(print_list)
 
     def help_all(self):
@@ -341,6 +347,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
