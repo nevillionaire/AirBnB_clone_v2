@@ -4,7 +4,7 @@
 from models import *
 
 # creation of a State
-state = state(name="California")
+State = State(name="California")
 state.save()
 
 # creation of a City
