@@ -75,7 +75,7 @@ class DBStorage():
         from models.place import Place
         from models.review import Review
 
-        Base.metadata.create_all(self.__engine)
+        Base.metadata.create_all(engine)
         self.__session = sessionmaker(bind=self.__engine,
                                       expire_on_commit=False)
         Session = scoped_session(self.__session)
